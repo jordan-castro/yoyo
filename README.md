@@ -109,12 +109,14 @@ return Person
 ```
 ```python
 # Then in Python we can import the lua file using yoyo
-from yoyo import import_file
+from yoyo import cross
 
 # Import the tree. 
-person_lua = import_file('/path/to/person.lua', import_file.LUA)
 # This basically is the same as doing `local Person = require('/path/to/person.lua')` person_lua is a pointer to the Lua Tree in pxs memory.
-person_lua.call('say_hello', person_lua)
+person_lua = cross.Lua('/path/to/person.lua')
+# Call the function.
+# This is the same as doing `Person:say_hello()`
+person_lua.func('say_hello').call(person_lua.type) 
 ```
 
 ## Repl
@@ -132,7 +134,7 @@ to get started.
 ```bash
 yoyo repl lua
 
-YOYO repl start
+YoYo v0.0.1
 >> -- Insert your lua code here!
 ```
 
@@ -158,5 +160,3 @@ Zig's cross platform compiler is required in order to embed dependency libraries
 
 ### Why Rust?
 The pixelscript runtime is written in Rust and it's build system uses Rust.
-
-- If you are 
