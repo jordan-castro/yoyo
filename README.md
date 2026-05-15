@@ -5,13 +5,25 @@ Since I first learned Python, I wanted the ability to create a program with mult
 polygot program. Yoyo, implements polygot programming in a way that ACTUALLY works and does not fight againts you. 
 Currently it's being used as the cross platform engine behind [Kazoku]().
 
-Because yoyo is written in Zig, it is blazingly fast and easily interops C libraries.
-
 ## Features
-By using [pixelscript]() internally, yoyo supports multiple scripting languages. Currently:
+
+### Scripting
+Write in high level scripting languages with native performance. Currently supported languages are
 - Lua
 - Python
-- JS
+- JavaScript
+
+### Easy Binding
+Easily bind C libraries to yoyo programs using the builtin `yoyo.bind` module. 
+
+### Extending
+Extend your native program with yoyo by compiling your extension to a shared/static library with `yoyo.make`.
+
+## Installing
+To install simply
+```bash
+cargo install yoyo
+```
 
 ## Example
 ### Hello World
@@ -148,15 +160,5 @@ By default, yoyo does not include a package manager. Third Party code can be han
 
 ## Dependencies
 The dependencies required to use Yoyo are:
-- Zig
+- LLVM/Clang 
 - Rust
-
-Check your setup with `yoyo doctor`.
-
-### Why Zig?
-Zig's cross platform compiler is required in order to embed dependency libraries.
-
-- If you are just using yoyo core APIs, then zig is not required.
-
-### Why Rust?
-The pixelscript runtime is written in Rust and it's build system uses Rust.
