@@ -46,10 +46,9 @@ print('Hello World!');
 ### Raylib
 Here is a more complex program using raylib. We will be using Python for the rest of these examples.
 
-First, yoyo needs to have access to raylib and it's libraries. This can be done easily using `yoyo bind` command
-`yoyo bind path/to/raylib.h` to create the raylib bindings in pixelscript.
+First, yoyo needs to have access to raylib and it's libraries. This can be done easily using `yoyo.bind` module to create the raylib bindings in pixelscript.
 
-You may also need a build step. For that you will have to write a build.py/lua/js file. An example for raylib would be:
+To do this we need a build step. For that you will have to write a build.py/lua/js file. An example for raylib would be:
 ```python
 from yoyo import make
 from yoyo import bind
