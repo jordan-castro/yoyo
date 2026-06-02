@@ -2,9 +2,7 @@
 
 ## Commands
 - `yoyo run`
-- `yoyo bind` 
 - `yoyo build`
-- `yoyo compile`
 
 ## Core modules
 - `yoyo.bind`
