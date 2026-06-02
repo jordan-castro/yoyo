@@ -20,10 +20,10 @@ Easily bind C libraries to yoyo programs using the builtin `yoyo.bind` module.
 Extend your native program with yoyo by compiling your extension to a shared/static library with `yoyo.make`.
 
 ## Installing
-To install simply
-```bash
-cargo install yoyo
-```
+TODO
+
+## Building
+TODO
 
 ## Example
 ### Hello World
@@ -44,7 +44,7 @@ print('Hello World!');
 ```
 
 ### Raylib
-Here is a more complex program using raylib. We will be using Python for the rest of the examples.
+Here is a more complex program using raylib. We will be using Python for the rest of these examples.
 
 First, yoyo needs to have access to raylib and it's libraries. This can be done easily using `yoyo bind` command
 `yoyo bind path/to/raylib.h` to create the raylib bindings in pixelscript.
@@ -160,5 +160,4 @@ By default, yoyo does not include a package manager. Third Party code can be han
 
 ## Dependencies
 The dependencies required to use Yoyo are:
-- LLVM/Clang 
-- Rust
+- A C/C++ compiler.
