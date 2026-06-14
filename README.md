@@ -157,6 +157,12 @@ A yoyo program is compiled with `yoyo compile` at the root of your project. It w
 ## Package manager
 By default, yoyo does not include a package manager. Third Party code can be handled via a `build` script. Include the libraries you want, and apply the build logic for them.
 
-## Dependencies
-The dependencies required to use Yoyo are:
-- A C/C++ compiler.
+<!-- ## Dependencies
+The dependencies required to **use** Yoyo are:
+| Name | What it's used for | Recommendations |
+|------|--------------------|----------|
+| A C/C++ compiler. | Used to compile  -->
+
+<!-- ## Build Dependencies
+The dependencies required to **build** Yoyo are:
+- Zig -->
