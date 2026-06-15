@@ -2,3 +2,6 @@
 .zig-cache
 zig-out
 __pycache__
+/build
+
+.yoyo
