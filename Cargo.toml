@@ -8,5 +8,5 @@ description = "Polyglot programming framework"
 repository = "https://github.com/jordan-castro/yoyo"
 
 [dependencies]
-reqwest = { version = "0.13", features = ["blocking"] }
 zip = "=6.0.0"
+pixelscript = "0.6.1"
