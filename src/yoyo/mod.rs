@@ -1,12 +1,13 @@
-use std::path::PathBuf;
+use std::{io::Cursor, path::PathBuf};
 use pixelscript::{pxs_finalize, pxs_initialize};
 use zip::ZipArchive;
 
-mod modules;
+mod core;
 
 pub const YOYO_PATH: &str = ".yoyo";
-pub const PIXEL_SCRIPT_ZIP_URL: &str = "https://github.com/jordan-castro/pixelscript/archive/refs/heads/master.zip";
-pub const PIXEL_SCRIPT_ZIP_PATH: &str = "pixelscript.zip";
+/// The pixelscript.zip file for bundling.
+static PIXELSCRIPT_ZIP: &[u8] = include_bytes!("../../pixelscript.zip");
+static MAIN_CPP: &[u8] = include_bytes!("../../main.cpp");
 
 pub type YoyoResult = Result<(), String>;
 pub type YoyoRes<T> = Result<T, String>;
@@ -22,8 +23,12 @@ macro_rules! yoyo_error {
 macro_rules! yoyo_dir {
     ($parent:expr) => {{
         let mut dir = PathBuf::from($parent);
-        dir.push(crate::yoyo::YOYO_PATH);
-        dir
+        if dir.ends_with(crate::yoyo::YOYO_PATH) {
+            dir
+        } else {
+            dir.push(crate::yoyo::YOYO_PATH);
+            dir
+        }
     }};
 }
 
@@ -45,6 +50,9 @@ pub fn create_file(path: &PathBuf) -> YoyoRes<std::fs::File> {
 
 /// Create a directory
 pub fn create_dir(path: &PathBuf) -> YoyoResult {
+    if path.exists() {
+        return Ok(());
+    }
     get_result!(std::fs::create_dir_all(path))
 }
 
@@ -53,9 +61,13 @@ pub fn read_file(path: &PathBuf) -> YoyoRes<Vec<u8>> {
     get_result!(std::fs::read(path))
 }
 
+pub fn remove_dir(path: &PathBuf) -> YoyoResult {
+    get_result!(std::fs::remove_dir_all(path))
+}
+
 /// Initialize the yoyo modules.
 pub fn add_modules() {
-    modules::gen_yoyo_module();
+    core::gen_yoyo_module();
 }
 
 /// Start yoyo engine
@@ -106,4 +118,41 @@ pub fn get_input() -> String {
     }
 
     result
+}
+
+/// Create .yoyo/
+pub fn create_yoyo_temp(parent: &PathBuf) -> YoyoResult {
+    let yoyo_dir = yoyo_dir!(parent);
+    create_dir(&yoyo_dir)
+}
+
+/// Remove .yoyo/
+pub fn remove_yoyo_temp(parent: &PathBuf) -> YoyoResult {
+    let yoyo_dir = yoyo_dir!(parent);
+    remove_dir(&yoyo_dir)
+}
+
+/// Extract the pixelscript zip file
+pub fn extract_zip_file(parent: PathBuf) -> YoyoResult {
+    let dir = yoyo_dir!(parent);
+    let reader = Cursor::new(PIXELSCRIPT_ZIP);
+    let mut archive = get_result!(ZipArchive::new(reader))?;
+
+    for i in 0..archive.len() {
+        let mut file = get_result!(archive.by_index(i))?;
+        let outpath = match file.enclosed_name() {
+            Some(fpath) => dir.join(fpath),
+            None => continue,
+        };
+        let outpath = outpath.to_str().unwrap().replace("-master", "");
+
+        if file.name().ends_with("/") {
+            get_result!(std::fs::create_dir_all(&outpath))?;
+        } else {
+            let mut outfile = get_result!(std::fs::File::create(outpath))?;
+            get_result!(std::io::copy(&mut file, &mut outfile))?;
+        }
+    }
+
+    Ok(())
 }
