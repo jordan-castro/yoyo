@@ -8,8 +8,8 @@ This is currently a work in progress.
 Current features include
 
 ### pixelscript compiler
-Compile (pixelscript)[https://github.com/jordan-castro/pixelscript] on the fly for your program. For a specific target.
-It uses cargo and rustc. Which means use (this link to view available targets)[https://doc.rust-lang.org/rustc/platform-support.html].
+Compile [pixelscript](https://github.com/jordan-castro/pixelscript) on the fly for your program. For a specific target.
+It uses cargo and rustc. Which means use [this link to view available targets]([https://doc.rust-lang.org/rustc/platform-support.html]).
 
 ```bash
 yoyo pxs --target <target> --path <optional_path="./">
