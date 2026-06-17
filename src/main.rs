@@ -3,7 +3,7 @@ use std::{io::{Cursor, Write}, path::PathBuf};
 use pixelscript::{own_string, pxs_clear, pxs_debugvar, pxs_eval, pxs_exec, pxs_freevar, pxs_getstring, pxs_tostring, pxs_varis, shared::{PtrMagic, pxs_Runtime, utils::CStringSafe, var::pxs_VarType}};
 use zip::ZipArchive;
 
-use crate::{commands::{ArgParser, Context, pxs}, yoyo::YoyoResult};
+use crate::{commands::{ArgParser, Context, pxs, repl}, yoyo::YoyoResult};
 
 mod yoyo;
 mod commands;
@@ -42,11 +42,20 @@ fn main() {
         context.python_name = python.get_value().clone();
     }
 
+    let target = arg_parser.get_flag_keys(vec!["--target"]);
+    if let Some(target) = target {
+        context.target = target.get_value().clone();
+    } else {
+        context.target = env!("TARGET").to_string();
+    }
+
     let command = arg_parser.next_arg();
     println!("command: {:#?}", command);
     if let Some(command) = command {
         let result = if command == "pxs" {
             pxs(&context, &mut arg_parser)
+        } else if command == "repl" {
+            repl(&context, &mut arg_parser)
         } else {
             println!("{USAGE}");
             return;
