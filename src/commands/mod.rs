@@ -1,19 +1,20 @@
-use std::{io::Write, path::PathBuf, process::Command};
+use std::{path::PathBuf, process::Command};
 
-use pixelscript::{own_string, shared::{pxs_Runtime, utils::CStringSafe, var::pxs_VarType}};
-
-use crate::{get_result, yoyo::{self, YoyoRes, YoyoResult}, yoyo_dir, yoyo_error};
-
+use crate::{get_result, utils::{self, YoyoRes, YoyoResult}, yoyo, yoyo_dir, yoyo_error};
 
 pub struct Context {
     pub cwd: PathBuf,
     pub target: String,
-    pub python_name: String
+    pub python_name: String,
 }
 
 impl Context {
     pub fn new() -> Self {
-        Context { cwd: PathBuf::new(), target: String::new(), python_name: String::from("python3") }
+        Context {
+            cwd: PathBuf::new(),
+            target: String::new(),
+            python_name: String::from("python3"),
+        }
     }
 
     pub fn set_cwd(&mut self, buf: PathBuf) {
@@ -23,7 +24,6 @@ impl Context {
     pub fn path_buf(&self) -> &PathBuf {
         &self.cwd
     }
-
 }
 
 pub struct Flag {
@@ -36,6 +36,7 @@ impl Flag {
         Flag { key, value }
     }
 
+    #[allow(unused)]
     /// Convert to bool if not true/false/1/0 error
     pub fn to_bool(&self) -> YoyoRes<bool> {
         if self.value == "true" {
@@ -56,7 +57,7 @@ impl Flag {
     }
     // /// Convert to integer if a number. otherwise error
     // pub fn to_int(&self) -> YoyoRes<i32> {
-        // get_result!(self.value.parse::<i32>())
+    // get_result!(self.value.parse::<i32>())
     // }
 }
 
@@ -68,19 +69,25 @@ pub struct ArgParser {
     /// Generated args without `flags`
     args: Vec<String>,
     /// Current step index in `args`
-    step_idx: u32
+    step_idx: u32,
 }
 
 impl ArgParser {
     pub fn new(raw_args: Vec<String>) -> ArgParser {
-        ArgParser { raw_args, flags: vec![], args: vec![], step_idx: 0 }
+        ArgParser {
+            raw_args,
+            flags: vec![],
+            args: vec![],
+            step_idx: 0,
+        }
     }
 
     pub fn parse(&mut self) {
         for i in 0..self.raw_args.len() {
             let arg = &self.raw_args[i];
             if (arg.starts_with("--") || arg.starts_with("-")) && i < self.raw_args.len() - 1 {
-                self.flags.push(Flag::new(arg.clone(), self.raw_args[i + 1].clone()));
+                self.flags
+                    .push(Flag::new(arg.clone(), self.raw_args[i + 1].clone()));
                 continue;
             }
 
@@ -113,6 +120,15 @@ impl ArgParser {
             Some(self.args[idx as usize].clone())
         }
     }
+    
+    /// Get the current argument.
+    pub fn current_arg(&self) -> String {
+        if self.step_idx == 0 {
+            self.args[0].clone()
+        } else {
+            self.args[(self.step_idx - 1) as usize].clone()
+        }
+    }
 }
 
 /// Compile pixelscript
@@ -125,14 +141,14 @@ pub fn pxs(context: &Context, arg_parser: &mut ArgParser) -> YoyoResult {
             } else {
                 ""
             }
-        },
-        None => ""
+        }
+        None => "",
     };
     // Unzip pixelscript.zip
     let path = context.path_buf();
     let mut path = yoyo_dir!(path);
-    yoyo::create_dir(&path)?;
-    yoyo::extract_zip_file(path.clone())?;
+    utils::create_dir(&path)?;
+    utils::extract_pixelscript_zip(&path, yoyo::PIXELSCRIPT_ZIP)?;
     path.push("pixelscript");
 
     let mut script_path = path.clone();
@@ -154,7 +170,7 @@ pub fn pxs(context: &Context, arg_parser: &mut ArgParser) -> YoyoResult {
     // Save the binaries into the current target
     current_dir.push("pxsb");
     current_dir.push(&context.target);
-    yoyo::create_dir(&current_dir)?;
+    utils::create_dir(&current_dir)?;
 
     // Get files from pxsb
     let files = get_result!(std::fs::read_dir(&path))?;
@@ -165,56 +181,66 @@ pub fn pxs(context: &Context, arg_parser: &mut ArgParser) -> YoyoResult {
         get_result!(std::fs::rename(f.path(), &new_path))?;
     }
 
-    println!("pixelscript binaries have been written to {}", current_dir.display());
+    println!(
+        "pixelscript binaries have been written to {}",
+        current_dir.display()
+    );
     Ok(())
 }
 
 /// Run a REPL
-pub fn repl(context: &Context, arg_parser: &mut ArgParser) -> YoyoResult {
+pub fn repl(arg_parser: &mut ArgParser) -> YoyoResult {
     let language = arg_parser.next_arg();
     if language.is_none() {
         return yoyo_error!("Expecte language");
     }
     let language = language.unwrap().trim().to_lowercase();
 
+    // TODO: use yoyo.cpp
+
     let runtime = match language.as_str() {
-        "python" | "py" => pxs_Runtime::pxs_Python,
-        "lua" => pxs_Runtime::pxs_Lua,
-        "javascript" | "js" => pxs_Runtime::pxs_JavaScript,
-        _ => return yoyo_error!("Unsupported language: {language}.")
+        "python" | "py" => 1,
+        "lua" => 0,
+        "javascript" | "js" => 2,
+        _ => return yoyo_error!("Unsupported language: {language}."),
     };
 
-    yoyo::start();
-
-    loop {
-        let mut cstring = CStringSafe::new();
-        print!("> ");
-        std::io::stdout().flush().unwrap();
-        
-        // Get input
-        let input = yoyo::get_input();
-        let input = input.trim();
-        if input.to_lowercase() == "quit" {
-            break;
-        } else if input.len() == 0 {
-            continue;
-        }
-
-        // Eval for the runtime
-        let result = pixelscript::pxs_exec(runtime.clone(), cstring.new_string(input), cstring.new_string("<repl>"));
-
-        if pixelscript::pxs_varis(result, pxs_VarType::pxs_Exception) {
-            let message = own_string!(pixelscript::pxs_getstring(result));
-            pixelscript::pxs_freevar(result);
-            println!("{message}");
-            pixelscript::pxs_clear();
-            yoyo::add_modules();
-            continue;
-        }
-        pixelscript::pxs_freevar(result);
-    }
-
+    yoyo::init();
+    yoyo::start_repl(runtime);
     yoyo::stop();
 
     Ok(())
+}
+
+/// Run source code
+pub fn run(context: &Context, arg_parser: &mut ArgParser) -> YoyoResult {
+    let mut dir = context.path_buf().clone();
+    let file = arg_parser.current_arg();
+    dir.push(&file);
+
+    // let file_as_path = PathBuf::from(&file);
+
+    let runtime = if file.ends_with(".py") {
+        1
+    } else if file.ends_with(".lua") {
+        0
+    } else if file.ends_with(".js") {
+        2
+    } else {
+        return yoyo_error!("Unsupported file type: {}", file)
+    };
+
+    // Read the file
+    let file_contents = yoyo::read_file(&dir)?;
+    let file_contents = get_result!(String::from_utf8(file_contents))?;
+
+    yoyo::init();
+    // Run it up ferg
+    let result = yoyo::run(runtime, &file_contents, &file);
+    yoyo::stop();
+
+    match result {
+        Ok(_) => {Ok(())},
+        Err(err) => Err(err),
+    }
 }

@@ -7,4 +7,6 @@
 ## v0.0.2
 - Working PXS compiler.
 - Customized REPL per language (not that difficult really)
-- Download pixelscript.zip in build.rs (remove python for now) TODO: switch this out with yoyo eventually.
+- Added Run funcionality
+- Moved core to CPP.
+- Updated build code to require env/ and requests. (Eventually will replace with yoyo)

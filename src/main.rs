@@ -1,18 +1,17 @@
-use std::{io::{Cursor, Write}, path::PathBuf};
+use std::path::PathBuf;
 
-use pixelscript::{own_string, pxs_clear, pxs_debugvar, pxs_eval, pxs_exec, pxs_freevar, pxs_getstring, pxs_tostring, pxs_varis, shared::{PtrMagic, pxs_Runtime, utils::CStringSafe, var::pxs_VarType}};
-use zip::ZipArchive;
-
-use crate::{commands::{ArgParser, Context, pxs, repl}, yoyo::YoyoResult};
+use crate::commands::{ArgParser, Context, pxs, repl, run};
 
 mod yoyo;
 mod commands;
+mod utils;
 
 const USAGE: &str = r#"YoYo v0.0.1
--h, --help          Get this message.
+-h,  --help          Get this message.
+-py, --python        Set the python runtime for compiling pixelscript.
+     --target        The compilation target for compiling pixelscript.
 
-init <name>
-compile <main_file>
+pxs <--python> <--target> Compile pixelscript for a specific target (or build) and pass in the path or env name for python runtime.
 "#;
 
 
@@ -50,15 +49,14 @@ fn main() {
     }
 
     let command = arg_parser.next_arg();
-    println!("command: {:#?}", command);
     if let Some(command) = command {
         let result = if command == "pxs" {
             pxs(&context, &mut arg_parser)
         } else if command == "repl" {
-            repl(&context, &mut arg_parser)
+            repl(&mut arg_parser)
         } else {
-            println!("{USAGE}");
-            return;
+            // Maybe this is a `run` command?
+            run(&context, &mut arg_parser)
         };
 
         match result {

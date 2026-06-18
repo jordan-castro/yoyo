@@ -1,2 +1,6 @@
-# v0.0.2
-- Download specific branch.
+# TODO
+
+- Download specific pxs branch.
+- Remove python dependency (use yoyo internally instead.)
+- compile command
+- link external libraries

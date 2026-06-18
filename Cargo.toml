@@ -9,7 +9,6 @@ repository = "https://github.com/jordan-castro/yoyo"
 
 [dependencies]
 zip = "=6.0.0"
-pixelscript = "0.6.1"
 
 [build-dependencies]
-reqwest = { version = "0.13.4", features = ["blocking"] }
+cc = "1.2.52"

@@ -1,7 +1,3 @@
-#include "pixelscript/pixelscript.h"
-#include <string>
-#include <iostream>
-
 #ifdef YOYO
 /**
  * yoyo
