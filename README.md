@@ -1,8 +1,9 @@
 # YoYo
-Polyglot programming framework.
+A engine for a dreamer.
+
+<!-- Polyglot programming framework.
 
 This is currently a work in progress.
-
 
 ## Features
 Current features include
@@ -31,4 +32,4 @@ yoyo repl |py|lua|js
 
 ## Future
 For the future I want to add the ability to create programs using yoyo and compile them into native binaries.
-And to easily extend a program using C header files and static libraries. That is still a work in progress.
+And to easily extend a program using C header files and static libraries. That is still a work in progress. -->

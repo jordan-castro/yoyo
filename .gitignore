@@ -2,8 +2,8 @@
 __pycache__
 
 .yoyo
-pixelscript.zip
 /pad
 pxsb
 env/
-pixelscript
+.zig-cache
+build

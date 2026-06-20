@@ -1,0 +1,3 @@
+[submodule "pixelscript"]
+	path = pixelscript
+	url = https://github.com/jordan-castro/pixelscript

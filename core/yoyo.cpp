@@ -1,4 +1,7 @@
-#include "yoyo.h"
+#include "yoyo.hpp"
+#include "os.hpp"
+#include "pxs.hpp"
+#include "fs.hpp"
 
 #include <pixelscript.h>
 #include <pixelscript_cpp.hpp>
@@ -10,23 +13,15 @@
 #include <fstream>
 #include <filesystem>
 
-// TODO: Add VFS for compile mode.
 pxs_VarT yoyo_load_file(const char* file_path) {
     if (!file_path) {
         return pxs_newnull();
     }
-    #ifdef YOYO_DEBUG
-    std::cout << "IMPORTING " << file_path << std::endl;
-    #endif
+    // #ifdef YOYO_DEBUG
+    // std::cout << "IMPORTING " << file_path << std::endl;
+    // #endif
 
-    // read file
-    std::ifstream file(file_path);
-    std::string contents;
-    std::string line;
-    while(std::getline(file, line)) {
-        contents += line + "\n";
-    }
-    file.close();
+    auto contents = yoyo::fs::iread_file(file_path);
 
     return pxs_newstring(contents.c_str());
 }
@@ -36,15 +31,10 @@ pxs_VarT yoyo_read_dir(const char* dir_path) {
         return pxs_newnull();
     }
 
-    std::filesystem::path dpath(dir_path);
-    if (!std::filesystem::exists(dpath) || !std::filesystem::is_directory(dpath)) {
-        return pxs_newnull();
-    }
-
+    auto contents = yoyo::fs::iread_dir(std::string(dir_path));
     auto list = pxs_newlist();
-    for (const auto& entry : std::filesystem::directory_iterator(dpath)) {
-        auto res = entry.path().filename();
-        pxs_listadd(list, pxs_newstring(res.string().c_str()));
+    for (const auto& entry : contents) {
+        pxs_listadd(list, pxs_newstring(entry.c_str()));
     }
 
     return list;
@@ -57,32 +47,7 @@ void setup_module_loading() {
 }
 
 #ifdef YOYO_APP
-// For repl only. It will publish the yoyo module and other helpful modules.
-void setup_repl(pxs_Runtime rt) {
-    std::string code;
-    switch(rt) {
-        case pxs_Runtime::pxs_Lua: 
-            code = "yoyo = require('yoyo')";
-            break;
-        case pxs_Runtime::pxs_Python:
-            code = "import yoyo";
-            break;
-        case pxs_Runtime::pxs_JavaScript:
-            code = "import * as yoyo from 'yoyo'; globalThis.yoyo = yoyo;";
-            break;
-        case pxs_Runtime::pxs_Wren:
-            return;
-    }
-    auto val = pxs_exec(rt, code.c_str(), "<repl>");
-    #ifdef YOYO_DEBUG
-    pxs::Var val_wrapper = pxs::Var(val);
-    std::cout << val_wrapper.debug() << std::endl;
-    #endif // YOYO_DEBUG
-    pxs_freevar(val);
-}
 #endif // YOYO_APP
-
-extern "C" {
 
 #ifdef YOYO_CORE
 
@@ -99,25 +64,54 @@ pxs_VarT yoyo_print(pxs_VarT args) {
         }
     }
 
-    std::cout << msg << std::endl;
+    std::cout << msg;
     return pxs_newnull();
+}
+
+/// `yoyo.println`
+pxs_VarT yoyo_println(pxs_VarT args) {
+    pxs_freevar(yoyo_print(args));
+    std::cout << std::endl;
+    return pxs_newnull();
+}
+
+/// `yoyo.readln`
+pxs_VarT yoyo_readln(pxs_VarT args) {
+    std::string line;
+    std::getline(std::cin, line);
+
+    return pxs_newstring(line.c_str());
 }
 
 #endif // YOYO_CORE
 
-void yoyo_init() {
+void yoyo::init(int argc, char* argv[]) {
     pxs_initialize();
     setup_module_loading();
     auto yoyo = pxs_newmod("yoyo");
 
     #ifdef YOYO_CORE
     pxs_addfunc(yoyo, "print", yoyo_print);
+    pxs_addfunc(yoyo, "println", yoyo_println);
+    pxs_addfunc(yoyo, "readln", yoyo_readln);
     #endif // YOYO_CORE
+
+    #ifdef YOYO_OS
+    yoyo::os::init(yoyo, argc, argv);
+    #endif // YOYO_OS
+
+    #ifdef YOYO_PXS
+    yoyo::ipxs::init(yoyo);
+    #endif // YOYO_PXS
+
+    #ifdef YOYO_FS
+    yoyo::fs::init(yoyo);
+    #endif // YOYO_FS
     
     pxs_addmod(yoyo);
 }
 
-void yoyo_stop() {
+void yoyo::stop() {
     // #ifdef YOYO_DEBUG
     // char* state = pxs_debugstate(pxs_Runtime::pxs_JavaScript);
     // std::cout << state << std::endl;
@@ -126,44 +120,35 @@ void yoyo_stop() {
     pxs_finalize();
 }
 
-#ifdef YOYO_APP
-void yoyo_repl(int runtime) {
-    // Convert runtime to a pxs_Runtime enum
-    pxs_Runtime rt = static_cast<pxs_Runtime>(runtime);
+// #ifdef YOYO_APP
+// void yoyo::repl(pxs_Runtime rt) {
+//     // Setup runtime.
+//     setup_repl(rt);
+//     pxs::Var rt_var = pxs::Var(pxs_newint(rt));
+//     rt_var.set_owned(true);
 
-    // Setup runtime.
-    setup_repl(rt);
-    pxs::Var rt_var = pxs::Var(pxs_newint(rt));
-    rt_var.set_owned(true);
+//     while(true) {
+//         // Get input from user
+//         std::string input;
+//         std::cout << "> ";
+//         if (!std::getline(std::cin, input) || input == "quit") {
+//             break;
+//         }
 
-    while(true) {
-        // Get input from user
-        std::string input;
-        std::cout << "> ";
-        if (!std::getline(std::cin, input) || input == "quit") {
-            break;
-        }
+//         if (input.empty()) {
+//             continue;
+//         }
 
-        if (input.empty()) {
-            continue;
-        }
+//         // eVal
+//         pxs::Var result = pxs::Var(rt_var.raw(), pxs_exec(rt, input.c_str(), "<repl>"), true);
+//         if (result.is(pxs_Exception)) {
+//             std::cout << result.get_string() << std::endl;
+//         }
+//     }
+// }
 
-        // eVal
-        pxs::Var result = pxs::Var(rt_var.raw(), pxs_exec(rt, input.c_str(), "<repl>"), true);
-        if (result.is(pxs_Exception)) {
-            std::cout << result.get_string() << std::endl;
-        }
-    }
-}
+// #endif // YOYO_APP
 
-const char* yoyo_run(int runtime, const char* code, const char* file_name) {
-    pxs_Runtime rt = static_cast<pxs_Runtime>(runtime);
-
-    pxs::Var runtime_var = pxs::Var(pxs_newint(rt));
-    runtime_var.set_owned(true);
-    pxs::Var result = pxs::Var(runtime_var.raw(), pxs_exec(rt, code, file_name), true);
-
-    return result.to_string().c_str();
-}
-#endif // YOYO_APP
+pxs::Var yoyo::run(pxs_Runtime runtime, const std::string& code, const std::string& file_name) {
+    return pxs::Var(nullptr, pxs_exec(runtime, code.c_str(), file_name.c_str()), true);
 }

@@ -10,3 +10,10 @@
 - Added Run funcionality
 - Moved core to CPP.
 - Updated build code to require env/ and requests. (Eventually will replace with yoyo)
+
+## v0.0.3
+- Remove Python dependency.
+- Add `yoyo_os`
+- Add `yoyo_pxs`
+- Add `yoyo_fs`
+- Move to `CMakeLists.txt`
