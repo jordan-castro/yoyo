@@ -2,6 +2,7 @@
 #include "os.hpp"
 #include "pxs.hpp"
 #include "fs.hpp"
+#include "shell.hpp"
 
 #include <pixelscript.h>
 #include <pixelscript_cpp.hpp>
@@ -107,6 +108,10 @@ void yoyo::init(int argc, char* argv[]) {
     #ifdef YOYO_FS
     yoyo::fs::init(yoyo);
     #endif // YOYO_FS
+
+    #ifdef YOYO_SHELL
+    yoyo::shell::init(yoyo);
+    #endif // YOYO_SHELL
     
     pxs_addmod(yoyo);
 }

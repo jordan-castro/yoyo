@@ -28,6 +28,7 @@ target_compile_definitions(yoyo PRIVATE
     YOYO_OS    # Optionally include the `yoyo.os` module.
     YOYO_PXS   
     YOYO_FS    
+    YOYO_SHELL
 )
 
 target_link_directories(yoyo PRIVATE

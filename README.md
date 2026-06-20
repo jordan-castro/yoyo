@@ -10,9 +10,14 @@ The flags are
 |----|-------|-----|
 |YOYO_DEBUG|Adds debugging to the `yoyo` cli.|Not really useful outside of `yoyo`s development.|
 |YOYO_CORE|Adds the main `yoyo` module.|Adds `print`, `println`, `readln`. If you dont add YOYO_CORE you can still add submodules.|
-|YOYO_OS|Adds the `yoyo.os` module.|This is platform agnostic but may not work on embedded.|
-|YOYO_PXS|Adds the `yoyo.pxs` module.|Adds methods for working with `pixelscript`.|
-|YOYO_FS|Adds the `yoyo.fs` module.|Adds file system access. This is platform agnostic but may not work on embedded.|
+|YOYO_OS|`yoyo.os`|This is cross platform.|
+|YOYO_PXS|`yoyo.pxs`|Adds methods for working with `pixelscript`.|
+|YOYO_FS|`yoyo.fs`|Adds file system access. This is cross platform.|
+|YOYO_SHELL|`yoyo.shell`|Interact with system shell. This is cross platform.|
+
+NOTE:
+Although some modules are cross platform that does not mean they will 100% work on something like a Samsung fridge. But if you need
+to build for that... you probably are not using YoYo anyways...
 
 
 ## How to use
@@ -32,14 +37,14 @@ Test from lua
 ```bash
 yoyo pxs
 ```
-### compiling scripting code
+<!-- ### compiling scripting code
 ```bash
 yoyo compile test.lua
 ```
 There is a caveat that this basic `compile` command will only work if you are not linking external libraries.
 Otherwise it is better for you to create a `build` script and run it with `yoyo build.py` or lua,js.
 
-But as this is still a WIP, I have not created the `yoyo.build` module.
+But as this is still a WIP, I have not created the `yoyo.build` module. -->
 
 ## Pixelscript
 Yoyo proudly uses [pixelscript](https://github.com/jordan-castro/pixelscript)
