@@ -17,3 +17,7 @@
 - Add `yoyo_pxs`
 - Add `yoyo_fs`
 - Move to `CMakeLists.txt`
+
+## v0.0.4
+- Added tests
+<!-- - Added `pxs` compile command -->
