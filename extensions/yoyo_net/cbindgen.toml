@@ -1,0 +1,11 @@
+language = "C"
+braces = "SameLine"
+includes = []
+
+include_guard = "YOYO_NET_H"
+header = "// SPDX-License-Identifier: MIT"
+
+cpp_compat = true
+
+[export]
+include = []

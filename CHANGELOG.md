@@ -20,4 +20,5 @@
 
 ## v0.0.4
 - Added tests
+- Added extensions
 <!-- - Added `pxs` compile command -->

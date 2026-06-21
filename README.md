@@ -48,3 +48,15 @@ But as this is still a WIP, I have not created the `yoyo.build` module. -->
 
 ## Pixelscript
 Yoyo proudly uses [pixelscript](https://github.com/jordan-castro/pixelscript)
+
+## Structure
+This project is outlined as follows
+
+|path|intention|
+|----|---------|
+|`core/`|Core yoyo modules as raw C/C++.|
+|`pixelscript/`|Pixelscript submodule used for the boostrap builder.|
+|`test/`|Tests cases. Run via `yoyo test`|
+|`src/`| Yoyo Cli source code.|
+|`scripts/`|Useful scripts for development. Require `yoyo` bootstrap atleast.|
+|`extensions/`|Non core extensions that are used only in the yoyo cli.|

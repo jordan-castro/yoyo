@@ -1,7 +1,7 @@
 #ifdef YOYO_PXS
 
 #include <pixelscript_cpp.hpp>
-#include "debug.hpp"
+#include "utils/debug.hpp"
 
 // ipxs = internal pxs module.
 // since pixelscript_cpp already uses `pxs` as a module.

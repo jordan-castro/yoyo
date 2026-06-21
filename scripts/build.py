@@ -1,10 +1,14 @@
+from yoyo import println
 from yoyo import os
-from yoyo import process
-from yoyo import env
-from yoyo import ziplib
 
-os.chdir('pixelscript')
-process.call([""])
+
+# from yoyo import os
+# from yoyo import process
+# from yoyo import env
+# from yoyo import ziplib
+
+# os.chdir('pixelscript')
+# process.call([""])
 
 # import requests
 # import shutil

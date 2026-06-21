@@ -1,0 +1,26 @@
+[package]
+name = "yoyo_net"
+version = "0.1.0"
+edition = "2024"
+authors = ["Jordan Castro jordan@grupojvm.com"]
+description = "High and low level abstractions for networking."
+license = "MIT"
+repository = "https://github.com/jordan-castro/yoyo/extensions/yoyo_net"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+reqwest = { version = "0.13", features = ["blocking"] }
+
+[build-dependencies]
+cbindgen = "0.29.2"
+
+[profile.release]
+opt-level = "z"
+strip = true
+lto = "fat"
+codegen-units = 1
+panic = "unwind"
+debug = false
+incremental = false
