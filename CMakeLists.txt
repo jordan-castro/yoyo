@@ -5,6 +5,15 @@ project(YoYoApp CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(FetchContent)
+FetchContent_Declare(
+    Corrosion
+    GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+    GIT_TAG v0.6
+)
+FetchContent_MakeAvailable(Corrosion)
+corrosion_import_crate(MANIFEST_PATH extensions/yoyo_net/Cargo.toml)
+
 file(GLOB CORE_SOURCES "core/*.cpp")
 
 # the YoYo cli is just a wrapper around `core`.
@@ -18,6 +27,7 @@ target_include_directories(yoyo PRIVATE
 )
 target_include_directories(yoyo SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/pixelscript"
+    "${CMAKE_CURRENT_SOURCE_DIR}/extensions/yoyo_net"
 )
 
 target_compile_definitions(yoyo PRIVATE
@@ -44,6 +54,8 @@ target_link_libraries(yoyo PRIVATE
     quickjs
     pixelscript
 )
+
+target_link_libraries(yoyo PUBLIC yoyo_net)
 
 if(MSVC)
     target_link_libraries(yoyo PRIVATE

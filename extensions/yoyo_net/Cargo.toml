@@ -9,7 +9,10 @@ crate-type = ["staticlib"]
 
 [dependencies]
 reqwest = { version = "0.13", features = ["blocking"] }
-etffi = "0.1.1"
+etffi = "0.1.2"
+
+[build-dependencies]
+cbindgen = "0.29.2"
 
 [profile.release]
 opt-level = "z"

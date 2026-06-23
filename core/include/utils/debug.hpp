@@ -8,11 +8,11 @@
 #include <utility>
 
 /// Print a line to the console from FT, works in Godot and WASM.
-void _PrintLine(const char* str) {
+inline void _PrintLine(const char* str) {
     std::cout << str << std::endl;
 }
 
-void _EPrintLine(const char* str) {
+inline void _EPrintLine(const char* str) {
     std::cout << "ERROR: " << str << std::endl;
 }
 

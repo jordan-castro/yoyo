@@ -59,6 +59,6 @@ This project is outlined as follows
 |`test/`|Tests cases. Run via `yoyo test`|
 |`src/`| Yoyo Cli source code.|
 |`scripts/`|Useful scripts for development. Require `yoyo` bootstrap atleast.|
-|`extensions/`|Non core extensions that are used only in the yoyo cli.|
+|`extensions/`|Extensions required for building `yoyo`.|
 
 ## Build instructions
