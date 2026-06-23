@@ -2,14 +2,14 @@
 
 #include <pixelscript_cpp.hpp>
 #include "utils/debug.hpp"
-
+#include "pxs.hpp"
 // ipxs = internal pxs module.
 // since pixelscript_cpp already uses `pxs` as a module.
 
 namespace yoyo::ipxs {
     // Execute code
     // Null means it was executed succesfully.
-    inline pxs_VarT exec(pxs_VarT args) {
+    pxs_VarT exec(pxs_VarT args) {
         PXS_ARGC_EQ(3); // runtime option, code, code name
         // Get runtime
         auto runtime = pxs::Var::from_args(args, 0);
@@ -31,7 +31,7 @@ namespace yoyo::ipxs {
         return pxs_newnull();
     }
 
-    inline void init(pxs_Module* yoyo) {
+    void init(pxs_Module* yoyo) {
         auto pxs = pxs_newmod("pxs");
 
         // Define runtime variables

@@ -1,5 +1,3 @@
-#pragma once
-
 #ifdef YOYO_FS
 
 #include <pixelscript.h>
@@ -8,10 +6,11 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include "fs.hpp"
 
 namespace yoyo::fs {
     // Internal read file.
-    inline std::string iread_file(const std::string& path) {
+    std::string iread_file(const std::string& path) {
         // TODO: Add VFS for compile mode.
         // read file
         std::ifstream file(path);
@@ -26,7 +25,7 @@ namespace yoyo::fs {
     }
 
     // Internal read dir
-    inline std::vector<std::string> iread_dir(const std::string& path) {
+    std::vector<std::string> iread_dir(const std::string& path) {
         std::filesystem::path dpath(path);
         if (!std::filesystem::exists(dpath) || !std::filesystem::is_directory(dpath)) {
             return {};
@@ -43,7 +42,7 @@ namespace yoyo::fs {
     }
 
     // read a file.
-    inline pxs_VarT read_file(pxs_VarT args) {
+    pxs_VarT read_file(pxs_VarT args) {
         PXS_ARGC_EQ(1); // file_path
         auto file_path = pxs::Var::from_args(args, 0);
         PXS_ARG_IS_TYPE(file_path.raw(), pxs_String);
@@ -52,7 +51,7 @@ namespace yoyo::fs {
     }
 
     // read a directory.
-    inline pxs_VarT read_dir(pxs_VarT args) {
+    pxs_VarT read_dir(pxs_VarT args) {
         PXS_ARGC_EQ(1); // dir_path
         auto dir_path = pxs::Var::from_args(args, 0);
         PXS_ARG_IS_TYPE(dir_path.raw(), pxs_String);
@@ -69,7 +68,7 @@ namespace yoyo::fs {
     }
 
     // Initialize the `yoyo.fs` module.
-    inline void init(pxs_Module* yoyo) {
+    void init(pxs_Module* yoyo) {
         auto _fs = pxs_newmod("fs");
         
         pxs_addfunc(_fs, "read_file", read_file);

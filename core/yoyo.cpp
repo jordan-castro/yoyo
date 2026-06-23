@@ -1,8 +1,20 @@
 #include "yoyo.hpp"
+
+#ifdef YOYO_OS
 #include "os.hpp"
+#endif
+#ifdef YOYO_PXS
 #include "pxs.hpp"
+#endif
+#ifdef YOYO_FS
 #include "fs.hpp"
+#endif
+#ifdef YOYO_SHELL
 #include "shell.hpp"
+#endif
+#ifdef YOYO_NET
+#include "net.hpp"
+#endif
 
 #include <pixelscript.h>
 #include <pixelscript_cpp.hpp>
@@ -112,47 +124,17 @@ void yoyo::init(int argc, char* argv[]) {
     #ifdef YOYO_SHELL
     yoyo::shell::init(yoyo);
     #endif // YOYO_SHELL
+
+    #ifdef YOYO_NET
+    yoyo::net::init(yoyo);
+    #endif // YOYO_NET
     
     pxs_addmod(yoyo);
 }
 
 void yoyo::stop() {
-    // #ifdef YOYO_DEBUG
-    // char* state = pxs_debugstate(pxs_Runtime::pxs_JavaScript);
-    // std::cout << state << std::endl;
-    // pxs_freestr(state);
-    // #endif // YOYO_DEBUG
     pxs_finalize();
 }
-
-// #ifdef YOYO_APP
-// void yoyo::repl(pxs_Runtime rt) {
-//     // Setup runtime.
-//     setup_repl(rt);
-//     pxs::Var rt_var = pxs::Var(pxs_newint(rt));
-//     rt_var.set_owned(true);
-
-//     while(true) {
-//         // Get input from user
-//         std::string input;
-//         std::cout << "> ";
-//         if (!std::getline(std::cin, input) || input == "quit") {
-//             break;
-//         }
-
-//         if (input.empty()) {
-//             continue;
-//         }
-
-//         // eVal
-//         pxs::Var result = pxs::Var(rt_var.raw(), pxs_exec(rt, input.c_str(), "<repl>"), true);
-//         if (result.is(pxs_Exception)) {
-//             std::cout << result.get_string() << std::endl;
-//         }
-//     }
-// }
-
-// #endif // YOYO_APP
 
 pxs::Var yoyo::run(pxs_Runtime runtime, const std::string& code, const std::string& file_name) {
     return pxs::Var(nullptr, pxs_exec(runtime, code.c_str(), file_name.c_str()), true);

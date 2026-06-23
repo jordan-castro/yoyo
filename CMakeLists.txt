@@ -1,18 +1,20 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.22)
 project(YoYoApp CXX C)
 
 # yoyo uses c++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Yoyo has few cpp files. Its mostly headers and static libraries.
+file(GLOB CORE_SOURCES "core/*.cpp")
+
+# the YoYo cli is just a wrapper around `core`.
 add_executable(yoyo
     "main.cpp"
-    "core/yoyo.cpp"
+    ${CORE_SOURCES}
 )
 
 target_include_directories(yoyo PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/core"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/include"
 )
 target_include_directories(yoyo SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/pixelscript"
@@ -29,6 +31,7 @@ target_compile_definitions(yoyo PRIVATE
     YOYO_PXS   
     YOYO_FS    
     YOYO_SHELL
+    YOYO_NET
 )
 
 target_link_directories(yoyo PRIVATE

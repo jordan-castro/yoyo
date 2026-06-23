@@ -1,16 +1,17 @@
 #ifdef YOYO_OS
 #include <pixelscript_cpp.hpp>
 #include <filesystem>
+#include "os.hpp"
 
 namespace yoyo::os {
     // Get the current working directory.
-    inline pxs_VarT get_cwd(pxs_VarT args) {
+    pxs_VarT get_cwd(pxs_VarT args) {
         auto res = std::filesystem::current_path();
         return pxs_newstring(res.string().c_str());
     }
 
     // Change the current directory
-    inline pxs_VarT ch_dir(pxs_VarT args) {
+    pxs_VarT ch_dir(pxs_VarT args) {
         PXS_ARGC_EQ(1); // new_path
         auto new_path = pxs::Var::from_args(args, 0);
         PXS_ARG_IS_TYPE(new_path.raw(), pxs_String);
@@ -23,7 +24,7 @@ namespace yoyo::os {
         return pxs_newnull();
     }
 
-    inline void init(pxs_Module* yoyo, int argc, char* argv[]) {
+    void init(pxs_Module* yoyo, int argc, char* argv[]) {
         auto yoyo_os = pxs_newmod("os");
 
         // Add argv

@@ -60,3 +60,5 @@ This project is outlined as follows
 |`src/`| Yoyo Cli source code.|
 |`scripts/`|Useful scripts for development. Require `yoyo` bootstrap atleast.|
 |`extensions/`|Non core extensions that are used only in the yoyo cli.|
+
+## Build instructions
