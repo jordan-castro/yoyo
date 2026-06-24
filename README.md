@@ -14,6 +14,8 @@ The flags are
 |YOYO_PXS|`yoyo.pxs`|Adds methods for working with `pixelscript`.|
 |YOYO_FS|`yoyo.fs`|Adds file system access. This is cross platform.|
 |YOYO_SHELL|`yoyo.shell`|Interact with system shell. This is cross platform.|
+|YOYO_NET|`yoyo.net`|Adds low and high level networking/http. Uses `reqwests` in rust.|
+|YOYO_ZIP|`yoyo.zip`|Read/Write/Extract zip files.|
 
 NOTE:
 Although some modules are cross platform that does not mean they will 100% work on something like a Samsung fridge. But if you need

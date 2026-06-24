@@ -16,7 +16,8 @@
                 "YOYO_PXS",
                 "YOYO_FS",
                 "YOYO_SHELL",
-                "YOYO_NET"
+                "YOYO_NET",
+                "YOYO_ZIP"
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

@@ -3,6 +3,9 @@
 #include <pixelscript_cpp.hpp>
 #include "utils/debug.hpp"
 #include "pxs.hpp"
+#include <string>
+#include <algorithm>
+#include <cctype>
 // ipxs = internal pxs module.
 // since pixelscript_cpp already uses `pxs` as a module.
 
@@ -31,6 +34,31 @@ namespace yoyo::ipxs {
         return pxs_newnull();
     }
 
+    // Get a Runtime type based on a name
+    // works for `py`, `python`, `lua`, `js`, `javascript`.
+    pxs_VarT runtime_from_name(pxs_VarT args) {
+        PXS_ARGC_EQ(1); // name:string
+        auto name_var = pxs::Var::from_args(args, 0);
+        PXS_ARG_IS_TYPE(name_var.raw(), pxs_String);
+        auto name = name_var.get_string();
+        
+        std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) {
+            return std::tolower(c);
+        });
+    
+        if (name == "py" || name == "python") {
+            return pxs_newint(static_cast<int>(pxs_Runtime::pxs_Python));
+        } else if (name == "lua") {
+            return pxs_newint(static_cast<int>(pxs_Runtime::pxs_Lua));
+        } else if (name == "js" || name == "javascript") {
+            return pxs_newint(static_cast<int>(pxs_Runtime::pxs_JavaScript));
+        } else if (name == "wren") {
+            return pxs_newint(static_cast<int>(pxs_Runtime::pxs_Wren));
+        } else {
+            return pxs_newnull();
+        }
+    }
+
     void init(pxs_Module* yoyo) {
         auto pxs = pxs_newmod("pxs");
 
@@ -41,6 +69,7 @@ namespace yoyo::ipxs {
 
         // Define exec and TODO: eval
         pxs_addfunc(pxs, "exec", exec);
+        pxs_addfunc(pxs, "runtime_from_name", runtime_from_name);
 
         pxs_add_submod(yoyo, pxs);
     }

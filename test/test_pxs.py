@@ -3,7 +3,7 @@ from yoyo import println
 
 
 def run_test(runtime, language, code):
-    println(f"Test {language}")
+    println(f"Test {language} {runtime} {language} {code}")
     res = pxs.exec(runtime, code, f"<{language}>")
     if not res == None:
         raise BaseException(res)

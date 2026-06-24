@@ -4,6 +4,7 @@
 #include <pixelscript_cpp.hpp>
 #include "types.hpp"
 #include <yoyo_net.h>
+#include "utils/debug.hpp"
 
 namespace yoyo::net {
     // Helpful function to get `self`
@@ -92,21 +93,29 @@ namespace yoyo::net {
         obj.add_property("version", CR_version);
         obj.add_property("status", CR_status);
         obj.add_property("text", CR_text);
+        obj.add_property("bytes", CR_bytes);
 
         return obj.make().raw();
     }
 
     // Make a GET request
     pxs_VarT get(pxs_VarT args) {
-        PXS_ARGC_EQ(1); // URL.
+        PXS_ARGC_GT(1); // URL:string, headers:list[list[String, String]], version:int
         auto url_arg = pxs::Var::from_args(args, 0);
         PXS_ARG_IS_TYPE(url_arg.raw(), pxs_String);
         auto url = url_arg.get_string();
 
-        auto response = yoyonet_httpclient_get(url.c_str());
+        // TODO: Implement all the different fields on options.
+        auto options = yoyonet_httpclient_options_new();
+        yoyonet_httpclient_options_seturl(options, url.c_str());
+
+        auto response = yoyonet_httpclient_request(options);
         if (response == nullptr) {
             return pxs_newexception("Could not GET");
         }
+
+        // Free options
+        yoyonet_httpclient_options_free(options);
 
         return _setup_response(response);
     }
@@ -115,6 +124,11 @@ namespace yoyo::net {
         auto net_mod = pxs_newmod("net");
 
         pxs_addfunc(net_mod, "get", get);
+        pxs_addvar(net_mod, "HTTP_VERSION_09", pxs_newint(YOYONET_HTTP_VERSION_09));
+        pxs_addvar(net_mod, "HTTP_VERSION_10", pxs_newint(YOYONET_HTTP_VERSION_10));
+        pxs_addvar(net_mod, "HTTP_VERSION_11", pxs_newint(YOYONET_HTTP_VERSION_11));
+        pxs_addvar(net_mod, "HTTP_VERSION_2", pxs_newint(YOYONET_HTTP_VERSION_2));
+        pxs_addvar(net_mod, "HTTP_VERSION_3", pxs_newint(YOYONET_HTTP_VERSION_3));
 
         pxs_add_submod(yoyo_mod, net_mod);
     }

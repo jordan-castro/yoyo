@@ -1,5 +1,6 @@
 from yoyo import println
 from yoyo import os
+from yoyo import net
 
 
 # from yoyo import os

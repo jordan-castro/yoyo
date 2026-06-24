@@ -5,7 +5,15 @@ macro_rules! unwrap_result {
     ($result:expr) => {
         match $result {
             Ok(val) => val,
-            Err(err) => return Err(err.to_string())
+            Err(err) => {
+                let error_msg = if let Some(source) = std::error::Error::source(&err) {
+                    format!("{}, {}", err, source)
+                } else {
+                    err.to_string()
+                };
+
+                return Err(error_msg)
+            }
         }
     };
 }

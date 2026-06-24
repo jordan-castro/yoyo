@@ -24,6 +24,26 @@ namespace yoyo::fs {
         return contents;
     }
 
+    std::vector<uint8_t> iread_file_bytes(const std::string& path) {
+        // TODO: Add VFS for compile mode.
+        // read file
+        std::ifstream file(path, std::ios::binary | std::ios::ate);
+        if (!file.is_open()) {
+            return {};
+        }
+
+        std::streamsize size = file.tellg();
+        file.seekg(0, std::ios::beg);
+        
+        std::vector<uint8_t> buffer(size);
+
+        if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
+            return {};
+        }
+
+        return buffer;
+    }
+
     // Internal read dir
     std::vector<std::string> iread_dir(const std::string& path) {
         std::filesystem::path dpath(path);
@@ -50,6 +70,20 @@ namespace yoyo::fs {
         return pxs_newstring(iread_file(file_path.get_string()).c_str());
     }
 
+    // read a files bytes.
+    pxs_VarT read_fileb(pxs_VarT args) {
+        PXS_ARGC_EQ(1); // file_path
+        auto file_path = pxs::Var::from_args(args, 0);
+        PXS_ARG_IS_TYPE(file_path.raw(), pxs_String);
+
+        auto bytes_list = pxs_newlist();
+        auto bytes = iread_file_bytes(file_path.get_string());
+        for (int i = 0; i < bytes.size(); i++) {
+            pxs_listadd(bytes_list, pxs_newuint(bytes[i]));
+        }
+        return bytes_list;
+    }
+
     // read a directory.
     pxs_VarT read_dir(pxs_VarT args) {
         PXS_ARGC_EQ(1); // dir_path
@@ -72,6 +106,7 @@ namespace yoyo::fs {
         auto _fs = pxs_newmod("fs");
         
         pxs_addfunc(_fs, "read_file", read_file);
+        pxs_addfunc(_fs, "read_fileb", read_fileb);
         pxs_addfunc(_fs, "read_dir", read_dir);
 
         pxs_add_submod(yoyo, _fs);

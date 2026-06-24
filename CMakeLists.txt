@@ -23,7 +23,8 @@ add_executable(yoyo
 )
 
 target_include_directories(yoyo PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/core/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/include",
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/lib"
 )
 target_include_directories(yoyo SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/pixelscript"
