@@ -18,6 +18,9 @@ namespace yoyo::fs {
     // Internal read dir
     std::vector<std::string> iread_dir(const std::string& path);
 
+    // Internal write bytes to a file.
+    bool iwrite_file(const std::string& path, const std::vector<unsigned char>& bytes);
+
     // read a file.
     pxs_VarT read_file(pxs_VarT args);
 

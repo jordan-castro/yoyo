@@ -4,8 +4,7 @@
 #include "utils/debug.hpp"
 #include "pxs.hpp"
 #include <string>
-#include <algorithm>
-#include <cctype>
+#include "utils/strutils.hpp"
 // ipxs = internal pxs module.
 // since pixelscript_cpp already uses `pxs` as a module.
 
@@ -40,11 +39,7 @@ namespace yoyo::ipxs {
         PXS_ARGC_EQ(1); // name:string
         auto name_var = pxs::Var::from_args(args, 0);
         PXS_ARG_IS_TYPE(name_var.raw(), pxs_String);
-        auto name = name_var.get_string();
-        
-        std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) {
-            return std::tolower(c);
-        });
+        auto name = yoyo::utils::str::to_lower(name_var.get_string());
     
         if (name == "py" || name == "python") {
             return pxs_newint(static_cast<int>(pxs_Runtime::pxs_Python));

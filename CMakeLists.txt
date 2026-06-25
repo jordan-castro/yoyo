@@ -23,7 +23,7 @@ add_executable(yoyo
 )
 
 target_include_directories(yoyo PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/core/include",
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/core/lib"
 )
 target_include_directories(yoyo SYSTEM PRIVATE
@@ -43,6 +43,7 @@ target_compile_definitions(yoyo PRIVATE
     YOYO_FS    
     YOYO_SHELL
     YOYO_NET
+    YOYO_ZIP
 )
 
 target_link_directories(yoyo PRIVATE
@@ -56,6 +57,7 @@ target_link_libraries(yoyo PRIVATE
     pixelscript
 )
 
+# Extensions
 target_link_libraries(yoyo PUBLIC yoyo_net)
 
 if(MSVC)

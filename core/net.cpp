@@ -5,11 +5,12 @@
 #include "types.hpp"
 #include <yoyo_net.h>
 #include "utils/debug.hpp"
+#include "utils/bytes.hpp"
 
 namespace yoyo::net {
     // Helpful function to get `self`
     yoyonet_ClientResponse* _get_response(const pxs::Var& var) {
-        return pxs::type::Wrapper::get<yoyonet_ClientResponse>(var, yoyo::types::HTTP_RESPONSE_TYPE);
+        return pxs::type::Wrapper::get<yoyonet_ClientResponse>(var, yoyo::types::NET_HTTP_RESPONSE_TYPE);
     }
 
     // Free a ClientResponse
@@ -59,13 +60,7 @@ namespace yoyo::net {
             return bytes_list;
         }
 
-        // Populate list
-        for (int i = 0; i < bytes->size; i++) {
-            auto byte = bytes->bytes[i];
-            pxs_listadd(bytes_list, pxs_newuint(byte));
-        }
-
-        return bytes_list;
+        return yoyo::utils::bytes::make_byte_list(bytes->bytes, bytes->size);
     }
 
     // ClientResponse.text
@@ -86,7 +81,7 @@ namespace yoyo::net {
 
     // Setup the response. This is useful because multiple mediums can create a ClientResponse.
     pxs_VarT _setup_response(yoyonet_ClientResponse* response) {
-        auto wrapper = new pxs::type::Wrapper(static_cast<pxs_Opaque>(response), free_http_response, yoyo::types::HTTP_RESPONSE_TYPE);
+        auto wrapper = new pxs::type::Wrapper(static_cast<pxs_Opaque>(response), free_http_response, yoyo::types::NET_HTTP_RESPONSE_TYPE);
         auto obj = pxs::Object(static_cast<pxs_Opaque>(wrapper), pxs::type::free_wrapper, "ClientResponse");
 
         // Methods go here.

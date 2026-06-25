@@ -3,5 +3,6 @@
 
 namespace yoyo::types {
 // net.hpp
-inline const int HTTP_RESPONSE_TYPE = 0;
+inline const int NET_HTTP_RESPONSE_TYPE = 0;
+inline const int ZIP_ZIP_FILE_TYPE = 1;
 };

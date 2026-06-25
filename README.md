@@ -64,3 +64,18 @@ This project is outlined as follows
 |`extensions/`|Extensions required for building `yoyo`.|
 
 ## Build instructions
+To build yoyo from source you first need to build the bootstrapper.
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+```
+YoYo uses C++ and Rust libraries which means cargo is required.
+Once the bootstrapper is built:
+```bash
+yoyo compile .
+```
+
+## Future
+This is framework designed around how programs are written at EpochTech. Scripting first with drop-in low level code when needed.

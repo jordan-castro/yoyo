@@ -15,6 +15,9 @@
 #ifdef YOYO_NET
 #include "net.hpp"
 #endif
+#ifdef YOYO_ZIP
+#include "zip.hpp"
+#endif
 
 #include <pixelscript.h>
 #include <pixelscript_cpp.hpp>
@@ -128,6 +131,10 @@ void yoyo::init(int argc, char* argv[]) {
     #ifdef YOYO_NET
     yoyo::net::init(yoyo);
     #endif // YOYO_NET
+
+    #ifdef YOYO_ZIP
+    yoyo::zip::init(yoyo);
+    #endif // YOYO_ZIP
     
     pxs_addmod(yoyo);
 }

@@ -1,3 +1,5 @@
+#ifdef YOYO_ZIP
+
 // Copyright (c) 2014-2017 Thomas Fussell
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -5707,3 +5709,5 @@ private:
 };
 
 } // namespace miniz_cpp
+
+#endif // YOYO_ZIP
