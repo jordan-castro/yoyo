@@ -10,6 +10,8 @@
 #include <pixelscript_cpp.hpp>
 #include <sstream>
 #include "utils/bytes.hpp"
+#include <filesystem>
+#include "utils/debug.hpp"
 
 #ifdef YOYO_FS
 #include "fs.hpp"
@@ -89,6 +91,7 @@ namespace yoyo::zip {
 
     // Extract a file to a specific location
     pxs_VarT ZF_extract(pxs_VarT args) {
+        #ifdef YOYO_FS
         PXS_ARGC_EQ(3); // self, path, location
         auto self = ZipFile::get(pxs::Var::from_args(args, 0));
         if (self == nullptr) {
@@ -100,15 +103,11 @@ namespace yoyo::zip {
         auto location = pxs::Var::from_args(args, 2);
         PXS_ARG_IS_TYPE(location.raw(), pxs_String);
 
-        #ifdef YOYO_FS
         auto contents = self->readb(path.get_string());
-        yoyo::fs::iwrite_file(location.get_string(), contents);
+        return pxs_newbool(yoyo::fs::iwrite_file(location.get_string(), contents));
         #else
-        return pxs_newexception('YOYO_FS is required.')
+        return pxs_newexception("YOYO_FS is required.");
         #endif
-
-        // self->file.extract(path.get_string(), location.get_string());
-        return pxs_newbool(true);
     }
 
     // Extract the entire archive.
@@ -122,16 +121,20 @@ namespace yoyo::zip {
 
         auto location = pxs::Var::from_args(args, 1);
         PXS_ARG_IS_TYPE(location.raw(), pxs_String);
-
+        auto loc_string = location.get_string();
         auto entries = self->file.infolist();
         for (const auto& entry : entries) {
-            
+            auto bytes = self->readb(entry.filename);
+            std::filesystem::path p(loc_string);
+            p.append(entry.filename);
+            if (!yoyo::fs::iwrite_file(p.string(), bytes)) {
+                return pxs_newbool(false);
+            }
         }
 
-        // self->file.extractall(location.get_string());
         return pxs_newbool(true);
         #else
-        return pxs_newex
+        return pxs_newexception("YOYO_FS is required.");
         #endif
     }
 

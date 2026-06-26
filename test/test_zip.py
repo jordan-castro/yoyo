@@ -24,5 +24,13 @@ if not contents == 'Ayo my main man dog!':
     raise Exception('Contents dont match')
 fs.remove_file('file1.txt')
 
+# Extract all from rfile
+result = rfile.extract_all('delete_me')
+if result != True:
+    raise Exception('Could not extract all')
+# Go through contents
+entries = fs.read_dir('delete_me')
+println(entries)
+
 # Remove it at the end.
 fs.remove_file('test.zip')
