@@ -20,17 +20,35 @@ namespace yoyo::fs {
     };
 
     // Pass this as the final argument in `open_file` to open as Read, Write, or Append
-    // Defaults to Read
+    // Defaults to Read.
+    // You can also mix it via bitwise.
     enum class FileOpenType : uint8_t {
-        Read,
-        Write,
-        Append
+        Read = 1 << 0,
+        Write = 2 << 1,
+        Append = 3 << 2,
     };
+
+    inline FileOpenType operator|(FileOpenType l, FileOpenType r) {
+        return static_cast<FileOpenType>(
+            static_cast<uint8_t>(l) | static_cast<uint8_t>(r)
+        );
+    }
+
+    inline bool operator&(FileOpenType l, FileOpenType r) {
+        return (static_cast<uint8_t>(l) & static_cast<uint8_t>(r));
+    }
 
     // Pass this as the final argument in `remove_dir` to either remove only empty components or all components.
     // Defaults to Empty.
     enum class DirRemoveType : uint8_t {
         Empty,
+        All
+    };
+
+    // Pass this as the final argument in `create_dir` to except on creating more than one internal directory.
+    // Defaults to `Single`
+    enum class CreateDirMode : uint8_t {
+        Single,
         All
     };
 
@@ -42,14 +60,14 @@ namespace yoyo::fs {
         // File path
         std::string path;
         // @private
-        // Potentially the stream for reading.
-        std::unique_ptr<std::ifstream> rfile;
-        // @private
-        // Potentially the stream for writing.
-        std::unique_ptr<std::ofstream> ofile;
+        // File stream
+        std::fstream stream;
         // @private
         // a buffer for writing, when the file is created not opened.
         std::stringstream buffer;
+        // @private
+        // Open type
+        FileOpenType opentype;
 
         // @private
         // Was this file created or opened?
@@ -107,6 +125,7 @@ namespace yoyo::fs {
         // returns `int` the new size of the file.
         static pxs_VarT append(pxs_VarT args);
 
+        // @except
         // Close a file.
         // args: 
         //  - self: `File`
@@ -126,6 +145,7 @@ namespace yoyo::fs {
         static pxs_VarT save(pxs_VarT args);
     };
 
+    // @except
     // Read a file.
     // args:
     //  - path: `string` path to the file.
@@ -133,7 +153,8 @@ namespace yoyo::fs {
     // 
     // returns `string`|`[]uint`
     pxs_VarT read_file(pxs_VarT args);
-
+    
+    // @except
     // Read the entries of a directory.
     // args:
     //  - path: `string` path to the directory.
@@ -166,7 +187,21 @@ namespace yoyo::fs {
     // Remove a file.
     // args:
     //  - path: `string` path to the file.
-    pxs_VarT remove_file(pxs_VarT);
+    pxs_VarT remove_file(pxs_VarT args);
+
+    // @except
+    // Create a directory.
+    // args:
+    //  - path: `string` directory path
+    //  - mode: `CreateDirMode` defaults to `Single`.
+    pxs_VarT create_dir(pxs_VarT args);
+
+    // Check if path is a directory.
+    // args:
+    //  - path: `string` path
+    //
+    // returns `bool`
+    pxs_VarT is_dir(pxs_VarT args);
 
     // @private
     // 

@@ -12,8 +12,8 @@ The flags are
 |YOYO_CORE|Adds the main `yoyo` module.|Adds `print`, `println`, `readln`. If you dont add YOYO_CORE you can still add submodules.|
 |YOYO_OS|`yoyo.os`|This is cross platform.|
 |YOYO_PXS|`yoyo.pxs`|Adds methods for working with `pixelscript`.|
-|YOYO_FS|`yoyo.fs`|Adds file system access. This is cross platform.|
-|YOYO_SHELL|`yoyo.shell`|Interact with system shell. This is cross platform.|
+|YOYO_FS|`yoyo.fs`|Adds file system access.|
+|YOYO_SHELL|`yoyo.shell`|Interact with system shell.|
 |YOYO_NET|`yoyo.net`|Adds low and high level networking/http. Uses `reqwests` in rust.|
 |YOYO_ZIP|`yoyo.zip`|Read/Write/Extract zip files.|
 

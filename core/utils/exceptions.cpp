@@ -19,7 +19,7 @@ namespace yoyo::utils::exceptions {
     pxs_VarT expected_type(pxs_VarType found, pxs_VarType expected) {
         auto found_type = pxs::string_type(found);
         auto expected_type = pxs::string_type(expected);
-        std::string msg = std::string("Expected " + found_type + ", found " + expected_type + " instead.");
+        std::string msg = std::string("Expected " + expected_type + ", found " + found_type + " instead.");
         return pxs_newexception(msg.c_str());
     }
     pxs_VarT expected_types(pxs_VarType found, const std::vector<pxs_VarType>& expected) {
@@ -27,6 +27,9 @@ namespace yoyo::utils::exceptions {
         std::string expected_types;
         for (const auto& t : expected) {
             expected_types += pxs::string_type(t);
+            expected_types += " ";
         }
+        std::string msg = std::string("Expected " + expected_types + ", found " + found_type + " instead.");
+        return pxs_newexception(msg.c_str());
     }
 };
