@@ -55,7 +55,7 @@ namespace yoyo::fs {
     // Wraps a `ifstream` or `ofstream` depending on `FileOpenType`.
     // Use this when memory needs to be explicit.
     // `read_file` and `write_file` use `File` internally.
-    class File {
+    class File : public pxs::type::Extension<File> {
         // @private
         // File path
         std::string path;
@@ -73,17 +73,33 @@ namespace yoyo::fs {
         // Was this file created or opened?
         bool created;
 
+        // @private
         // When opening a file.
         File(const std::string& fpath, FileOpenType ot);
+        // @private
         // When creating a file.
         File();
     
     public:
         ~File();
-        // @private
+
+        // @prop
+        // Get the file path set.
         // 
-        // Get `self`.
-        static File* self(pxs_VarT arg);
+        // args:
+        //  - self: `File`
+        //
+        // returns `string` string if this file was not created.
+        static pxs_VarT get_path(pxs_VarT args);
+        
+        // @prop
+        // Get the `FileOpenType`.
+        // 
+        // args:
+        //  - self: `File`
+        //
+        // returns `FileOpenType`
+        static pxs_VarT get_open_type(pxs_VarT args);
 
         // Create a new `File`. It won't write to the system until `save` is called.
         //
@@ -95,7 +111,7 @@ namespace yoyo::fs {
         // Open a `File`. If it does not exist, it creates it on the fly, but `save` is not required.
         // args:
         //  - path: `string` path to the file.
-        //  - open_type: `FileOpenType` how to open the file. Defaults to `FileOpenType::Read`.
+        //  - open_type: @opt `FileOpenType` how to open the file. Defaults to `FileOpenType::Read`.
         //
         // returns `File` a new instance.
         static pxs_VarT open(pxs_VarT args);
@@ -104,7 +120,7 @@ namespace yoyo::fs {
         // Read from `self`.
         // args:
         //  - self: `File`
-        //  - read_type: `FileReadType` what to return the file contents as. Defaults to `FileReadType::Text`.
+        //  - read_type: @opt `FileReadType` what to return the file contents as. Defaults to `FileReadType::Text`.
         //
         // returns `string`|`[]uint` Text or Bytes depending on `read_type`.
         static pxs_VarT read(pxs_VarT args);
@@ -149,7 +165,7 @@ namespace yoyo::fs {
     // Read a file.
     // args:
     //  - path: `string` path to the file.
-    //  - read_type: `FileReadType` how to read the file. Defaults to `FileReadType::Text`.
+    //  - read_type: @opt `FileReadType` how to read the file. Defaults to `FileReadType::Text`.
     // 
     // returns `string`|`[]uint`
     pxs_VarT read_file(pxs_VarT args);
@@ -180,7 +196,7 @@ namespace yoyo::fs {
     // Remove a directory.
     // args:
     //  - path: `string` path to the directory.
-    //  - rt: `DirRemoveType` to remove empty or all. Default empty
+    //  - rt: @opt `DirRemoveType` to remove empty or all. Default empty
     pxs_VarT remove_dir(pxs_VarT args);
 
     // @except
@@ -193,7 +209,7 @@ namespace yoyo::fs {
     // Create a directory.
     // args:
     //  - path: `string` directory path
-    //  - mode: `CreateDirMode` defaults to `Single`.
+    //  - mode: @opt `CreateDirMode` defaults to `Single`.
     pxs_VarT create_dir(pxs_VarT args);
 
     // Check if path is a directory.

@@ -85,15 +85,10 @@ pub extern "C" fn yoyonet_httpclient_options_setversion(ptr: *mut yoyonet_Client
     let bo = unsafe { yoyonet_ClientOptions::from_borrow(ptr) };
     bo.version = Some(version);
 }
-    // /// A optional Version
-    // pub version: Option<i8>,
-    // /// Set a Timeout
-    // pub timeout: u64,
-
 
 /// http::client. Make a request response from options.
 /// 
-/// url: BORROW
+/// options: BORROW
 /// return: OWNED
 #[unsafe(no_mangle)]
 pub extern "C" fn yoyonet_httpclient_request(options: *mut yoyonet_ClientOptions) -> *mut yoyonet_ClientResponse {
